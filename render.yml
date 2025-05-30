@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: TrailHub
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    buildCommand: ''
+    startCommand: ''
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:6IRyPiaHtj1A4UEWQTWhUsObhYkjFgKHPGVSN99paPI=
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        value: switchyard.proxy.rlwy.net
+      - key: DB_PORT
+        value: '18709'
+      - key: DB_DATABASE
+        value: railway
+      - key: DB_USERNAME
+        value: root
+      - key: DB_PASSWORD
+        value: FHkfxiuhnRiAPtrUydqoVHLZHcTRrrPa
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
