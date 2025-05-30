@@ -22,4 +22,4 @@ RUN chown -R www-data:www-data /var/www \
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
