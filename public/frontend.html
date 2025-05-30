@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TrailHub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 1rem auto;
+            background-image: url('images/g5.jpg'); /* Background image */
+            background-size: cover;
+            background-position: center;
+        }
+        input, button, textarea, select {
+            font-size: 1rem;
+            margin: 0.25rem 0;
+            width: 100%;
+            padding: 0.5rem;
+        }
+        /* Button Color */
+        button {
+            cursor: pointer;
+            background-color: #8134ee; /* Lavender button */
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #320e5c; /* Light Lavender on hover */
+        }
+        section {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        h2 {
+            margin-top: 0;
+        }
+        #eventsList, #filesList, #slackMessages, #chatMessages {
+            border: 1px solid #aaa;
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem;
+            white-space: pre-wrap;
+            background: #f9f9f9;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Tagline Style */
+        #tagline {
+            font-size: 1.25rem;
+            color: #1f0707;
+            margin-top: -10px; /* Adjust as needed */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>TrailHub</h1>
+<p id="tagline">"One path, One Goal"</p>
+
+<!-- LOGIN -->
+<section id="authSection">
+
+  <!-- Login form -->
+  <div id="loginForm">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <button id="showRegisterBtn" style="margin-top: 10px;">Register</button>
+    <div id="loginMsg" style="color:red;"></div>
+  </div>
+
+  <!-- Registration form (hidden by default) -->
+  <div id="registerForm" style="display:none;">
+    <h2>Register</h2>
+    <input type="text" id="regName" placeholder="Name" />
+    <input type="email" id="regEmail" placeholder="Email" />
+    <input type="password" id="regPassword" placeholder="Password" />
+    <input type="password" id="regPasswordConfirm" placeholder="Confirm Password" />
+    <button id="registerSubmitBtn">Submit Registration</button>
+    <button id="showLoginBtn" style="margin-top: 10px;">Back to Login</button>
+    <div id="registerMsg" style="color:red;"></div>
+  </div>
+
+</section>
+
+
+<!-- APP -->
+<section id="appSection" style="display:none;">
+  <button id="logoutBtn">Logout</button>
+
+  <!-- Google Calendar -->
+  <section>
+    <h2>Google Calendar</h2>
+
+    <h3>List Events</h3>
+    <button id="listEventsBtn">Load Events</button>
+    <input type="text" id="eventIdInput" placeholder="Enter Event ID" />
+    <div id="eventsList">No events loaded.</div>
+
+    <h3>Get Event by ID</h3>
+    <button id="getEventBtn">Get Event</button>
+    <pre id="eventDetails"></pre>
+
+    <h3>Add Event</h3>
+    <input type="text" id="addEventSummary" placeholder="Event summary" />
+    <input type="date" id="addEventDate" />
+    <button id="addEventBtn">Add Event</button>
+
+    <h3>Delete Event</h3>
+    <input type="text" id="deleteEventId" placeholder="Event ID to delete" />
+    <button id="deleteEventBtn">Delete Event</button>
+  </section>
+
+  <!-- Google Drive -->
+  <section>
+    <h2>Google Drive</h2>
+
+    <button id="listFilesBtn">List Files</button>
+    <div id="filesList">No files loaded.</div>
+
+    <input type="file" id="fileInput" />
+    <button id="uploadFileBtn">Upload File</button>
+
+    <input type="text" id="deleteFileId" placeholder="File ID to delete" />
+    <button id="deleteFileBtn">Delete File</button>
+  </section>
+
+  <!-- Slack -->
+  <section>
+    <h2>Slack Messaging</h2>
+
+    <label>Channel ID:</label>
+    <input type="text" id="slackChannelId" placeholder="Slack Channel ID" />
+
+    <button id="getSlackMessagesBtn">Get Messages</button>
+    <div id="slackMessages">No messages loaded.</div>
+
+    <label>Send Message:</label>
+    <input type="text" id="slackSendText" placeholder="Message text" />
+    <button id="sendSlackMsgBtn">Send Message</button>
+
+    <label>Update Message (Timestamp):</label>
+    <input type="text" id="slackUpdateTs" placeholder="Enter message timestamp (e.g., 1630441345)" />
+    <input type="text" id="slackUpdateText" placeholder="New message text" />
+    <button id="updateSlackMsgBtn">Update Message</button>
+
+    <label>Delete Message:</label>
+    <input type="text" id="slackDeleteTs" placeholder="Timestamp of message" />
+    <button id="deleteSlackMsgBtn">Delete Message</button>
+  </section>
+
+  <!-- Dictionary -->
+  <section>
+    <h2>Merriam-Webster Dictionary Lookup</h2>
+    <input type="text" id="dictWord" placeholder="Enter a word" />
+    <textarea id="dictResult" rows="5" readonly>No lookup yet.</textarea>
+  </section>
+
+  <!-- OpenAI Chat -->
+  <section>
+    <h2>Chat with JaTrAll (OpenAI)</h2>
+    <div id="chatMessages" style="height:150px; overflow-y:auto; background:#eee; padding:0.5rem;"></div>
+    <textarea id="chatInput" rows="3" placeholder="Type message..."></textarea>
+    <button id="sendChatBtn">Send Chat</button>
+  </section>
+</section>
+
+<script>
+  const API_BASE = 'http://localhost:8000/api';
+  let jwtToken = null;
+
+  function setToken(token) {
+    jwtToken = token;
+    if(token) localStorage.setItem('jwt_token', token);
+    else localStorage.removeItem('jwt_token');
+  }
+
+  function getToken() {
+    if(!jwtToken) jwtToken = localStorage.getItem('jwt_token');
+    return jwtToken;
+  }
+
+  async function apiFetch(path, method='GET', body=null) {
+    const token = getToken();
+    if(!token && path !== '/login') throw new Error('Not authenticated');
+    const headers = { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` };
+    let fetchBody = null;
+    if(body) {
+      if(body instanceof FormData) fetchBody = body;
+      else {
+        headers['Content-Type'] = 'application/json';
+        fetchBody = JSON.stringify(body);
+      }
+    }
+    const res = await fetch(API_BASE + path, { method, headers, body: fetchBody });
+    if(!res.ok) {
+      let err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'API error');
+    }
+    return await res.json();
+  }
+
+  // Login
+  document.getElementById('loginBtn').onclick = async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const msg = document.getElementById('loginMsg');
+    msg.textContent = '';
+    try {
+      const data = await apiFetch('/login', 'POST', { email, password });
+      setToken(data.access_token);
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('appSection').style.display = 'block';
+      clearInputs();
+      loadEvents();
+      loadFiles();
+    } catch(e) {
+      msg.textContent = e.message;
+    }
+  };
+
+  document.getElementById('registerSubmitBtn').onclick = async () => {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const password_confirmation = document.getElementById('regPasswordConfirm').value;
+  const msg = document.getElementById('registerMsg');
+  msg.textContent = '';
+
+  if (!name || !email || !password || !password_confirmation) {
+    msg.textContent = 'Please fill in all fields';
+    return;
+  }
+  if (password !== password_confirmation) {
+    msg.textContent = 'Passwords do not match';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name, email, password, password_confirmation }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Show validation errors or message
+      if (data.errors) {
+        msg.textContent = Object.values(data.errors).flat().join(' ');
+      } else if (data.error) {
+        msg.textContent = data.error;
+      } else {
+        msg.textContent = 'Registration failed';
+      }
+      return;
+    }
+
+    // On success, set token, hide register/login, show app
+    localStorage.setItem('jwt_token', data.access_token);
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('appSection').style.display = 'block';
+    clearInputs();
+    loadEvents();
+    loadFiles();
+  } catch (e) {
+    msg.textContent = 'Error: ' + e.message;
+  }
+};
+
+// Show register form, hide login form
+document.getElementById('showRegisterBtn').onclick = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'block';
+  clearMessages();
+  clearInputs();
+};
+
+// Show login form, hide register form
+document.getElementById('showLoginBtn').onclick = () => {
+  document.getElementById('registerForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+  clearMessages();
+  clearInputs();
+};
+
+function clearMessages() {
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('registerMsg').textContent = '';
+}
+
+
+  // Register Button Logic
+  document.getElementById('registerBtn').onclick = () => {
+    alert('Registration feature is not implemented yet!');
+    // Here, you can redirect the user to a registration page.
+  };
+
+  // Logout
+  document.getElementById('logoutBtn').onclick = () => {
+    setToken(null);
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('appSection').style.display = 'none';
+  };
+
+  // Clear all input fields on login
+  function clearInputs() {
+    ['email','password','eventIdInput','addEventSummary','addEventDate','deleteEventId','deleteFileId',
+    'slackChannelId','slackSendText','slackUpdateTs','slackUpdateText','slackDeleteTs','dictWord','chatInput'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.value='';
+    });
+    document.getElementById('loginMsg').textContent='';
+    document.getElementById('eventsList').textContent = 'No events loaded.';
+    document.getElementById('filesList').textContent = 'No files loaded.';
+    document.getElementById('slackMessages').textContent = 'No messages loaded.';
+    document.getElementById('dictResult').value = 'No lookup yet.';
+    document.getElementById('chatMessages').textContent = '';
+  }
+
+  // CALENDAR
+
+  async function loadEvents() {
+    try {
+      const events = await apiFetch('/cylendar/events');
+      const el = document.getElementById('eventsList');
+      if(events.length === 0) el.textContent = 'No events found.';
+      else el.innerHTML = events.map(e => {
+        return `
+          <div>
+            <strong>Name of Event:</strong> ${e.summary}<br />
+            <strong>ID:</strong> ${e.id}<br />
+            <strong>Date:</strong> ${e.start.dateTime || e.start.date}<br />
+            <strong>Time:</strong> ${e.start.dateTime || 'N/A'}
+          </div>
+          <hr />
+        `;
+      }).join('');
+    } catch(e) {
+      document.getElementById('eventsList').textContent = 'Error loading events: ' + e.message;
+    }
+  }
+
+  document.getElementById('listEventsBtn').onclick = loadEvents;
+
+  document.getElementById('getEventBtn').onclick = async () => {
+    const eventId = document.getElementById('eventIdInput').value.trim();
+    const output = document.getElementById('eventDetails');
+    if(!eventId) { alert('Enter Event ID'); return; }
+    try {
+      const event = await apiFetch(`/cylendar/event/${encodeURIComponent(eventId)}`);
+      output.textContent = JSON.stringify(event, null, 2);
+    } catch(e) {
+      output.textContent = 'Error: ' + e.message;
+    }
+  };
+
+  document.getElementById('getEventBtn').onclick = async () => {
+  const eventId = document.getElementById('eventIdInput').value.trim();
+  const output = document.getElementById('eventDetails');
+  if (!eventId) { alert('Enter Event ID'); return; }
+  try {
+    const event = await apiFetch(`/cylendar/event/${encodeURIComponent(eventId)}`);
+    
+    // Formatting the event result like the events list
+    output.innerHTML = `
+      <div>
+        <strong>Name of Event:</strong> ${event.summary}<br />
+        <strong>ID:</strong> ${event.id}<br />
+        <strong>Date:</strong> ${event.start.dateTime || event.start.date}<br />
+        <strong>Time:</strong> ${event.start.dateTime || 'N/A'}
+      </div>
+      <hr />
+    `;
+  } catch (e) {
+    output.textContent = 'Error: ' + e.message;
+  }
+};
+
+document.getElementById('addEventBtn').onclick = async () => {
+  const summary = document.getElementById('addEventSummary').value.trim();
+  const date = document.getElementById('addEventDate').value;
+  
+  // Ensure summary and date are provided
+  if (!summary || !date) { 
+    alert('Please enter event summary and date'); 
+    return; 
+  }
+  
+  // Prepare the event data
+  const eventData = { 
+    summary, 
+    start: { date: date },  // Assuming you're using date only. Modify if you need time.
+    end: { date: date }     // Same for end date.
+  };
+  
+  try {
+    // Make the API call to add the event
+    await apiFetch('/cylendar/event', 'POST', eventData);
+    alert('Event added successfully');
+    loadEvents();  // Reload events to display the newly added event
+    // Clear input fields
+    document.getElementById('addEventSummary').value = '';
+    document.getElementById('addEventDate').value = '';
+  } catch (e) {
+    alert('Failed to add event: ' + e.message);
+  }
+};
+
+  document.getElementById('deleteEventBtn').onclick = async () => {
+    const eventId = document.getElementById('deleteEventId').value.trim();
+    if(!eventId) { alert('Enter Event ID'); return; }
+    if(!confirm('Delete event?')) return;
+    try {
+      await apiFetch(`/cylendar/event/${encodeURIComponent(eventId)}`, 'DELETE');
+      alert('Event deleted');
+      loadEvents();
+      document.getElementById('deleteEventId').value = '';
+    } catch(e) {
+      alert('Failed to delete event: ' + e.message);
+    }
+  };
+
+  // DRIVE
+
+  async function loadFiles() {
+    try {
+      const files = await apiFetch('/SynDrive/list');
+      const el = document.getElementById('filesList');
+      if(files.length === 0) el.textContent = 'No files found.';
+      else el.innerHTML = files.map(f => {
+        return `<a href="https://drive.google.com/file/d/${f.id}/view" target="_blank">${f.name} (ID: ${f.id})</a>`;
+      }).join('<br />');
+    } catch(e) {
+      document.getElementById('filesList').textContent = 'Error loading files: ' + e.message;
+    }
+  }
+
+  document.getElementById('listFilesBtn').onclick = loadFiles;
+
+  document.getElementById('uploadFileBtn').onclick = async () => {
+    const input = document.getElementById('fileInput');
+    if(input.files.length === 0) { alert('Select a file'); return; }
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      await apiFetch('/SynDrive/upload', 'POST', formData);
+      alert('File uploaded');
+      input.value = '';
+      loadFiles();
+    } catch(e) {
+      alert('Upload failed: ' + e.message);
+    }
+  };
+
+  document.getElementById('deleteFileBtn').onclick = async () => {
+    const fileId = document.getElementById('deleteFileId').value.trim();
+    if(!fileId) { alert('Enter File ID'); return; }
+    if(!confirm('Delete file?')) return;
+    try {
+      await apiFetch(`/SynDrive/delete/${encodeURIComponent(fileId)}`, 'DELETE');
+      alert('File deleted');
+      loadFiles();
+      document.getElementById('deleteFileId').value = '';
+    } catch(e) {
+      alert('Failed to delete file: ' + e.message);
+    }
+  };
+
+  // SLACK
+
+   // SLACK
+
+  async function loadSlackMessages() {
+    const channelId = document.getElementById('slackChannelId').value.trim();
+    const el = document.getElementById('slackMessages');
+    if (!channelId) { el.textContent = 'Enter channel ID'; return; }
+    try {
+      const res = await apiFetch(`/nika-talk/messages?channel=${encodeURIComponent(channelId)}`);
+      if (res.error) {
+        el.textContent = 'Error: ' + res.message;
+        return;
+      }
+      el.textContent = (res.messages || []).map(m => {
+        const dateTime = new Date(parseFloat(m.ts) * 1000).toLocaleTimeString();
+        return `[${dateTime}] Unix Timestamp: ${m.ts} - ${m.user || 'unknown'}: ${m.text}`;
+      }).join('\n');
+    } catch (e) {
+      el.textContent = 'Failed: ' + e.message;
+    }
+  }
+
+  document.getElementById('getSlackMessagesBtn').onclick = loadSlackMessages;
+
+  document.getElementById('sendSlackMsgBtn').onclick = async () => {
+    const channelId = document.getElementById('slackChannelId').value.trim();
+    const text = document.getElementById('slackSendText').value.trim();
+    if (!channelId || !text) { alert('Enter channel and message'); return; }
+    try {
+      await apiFetch('/nika-talk/send', 'POST', { channel: channelId, text });
+      alert('Message sent');
+      document.getElementById('slackSendText').value = '';
+      loadSlackMessages();
+    } catch (e) {
+      alert('Send failed: ' + e.message);
+    }
+  };
+
+  document.getElementById('updateSlackMsgBtn').onclick = async () => {
+    const channelId = document.getElementById('slackChannelId').value.trim();
+    const ts = document.getElementById('slackUpdateTs').value.trim();
+    const text = document.getElementById('slackUpdateText').value.trim();
+    if (!channelId || !ts || !text) { alert('Enter channel, timestamp and new text'); return; }
+    try {
+      await apiFetch('/nika-talk/update', 'POST', { channel: channelId, ts, text });
+      alert('Message updated');
+      loadSlackMessages();
+    } catch (e) {
+      alert('Update failed: ' + e.message);
+    }
+  };
+
+  document.getElementById('deleteSlackMsgBtn').onclick = async () => {
+    const channelId = document.getElementById('slackChannelId').value.trim();
+    const ts = document.getElementById('slackDeleteTs').value.trim();
+    if (!channelId || !ts) { alert('Enter channel and timestamp'); return; }
+    if (!confirm('Delete this message?')) return;
+    try {
+      await apiFetch('/nika-talk/delete', 'POST', { channel: channelId, ts });
+      alert('Message deleted');
+      loadSlackMessages();
+    } catch (e) {
+      alert('Delete failed: ' + e.message);
+    }
+  };
+
+  // DICTIONARY
+
+  document.getElementById('dictWord').oninput = debounce(async (e) => {
+    const word = e.target.value.trim();
+    const output = document.getElementById('dictResult');
+    if(!word) { output.value = ''; return; }
+    try {
+      const data = await apiFetch(`/myle-book/define?word=${encodeURIComponent(word)}`);
+      if(Array.isArray(data) && data.length) {
+        const defs = data.map(d => (d.shortdef||[]).join('; ')).filter(Boolean).join('\n\n');
+        output.value = defs || 'No definitions found.';
+      } else if(data.error) {
+        output.value = 'Error: ' + data.error;
+      } else {
+        output.value = 'No definitions found.';
+      }
+    } catch(e) {
+      output.value = 'Error: ' + e.message;
+    }
+  }, 500);
+
+  // CHAT OPENAI
+
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+
+  document.getElementById('sendChatBtn').onclick = async () => {
+    const msg = chatInput.value.trim();
+    if(!msg) return;
+    appendChat('You', msg);
+    chatInput.value = '';
+    try {
+      const res = await apiFetch('/jatrail/chat', 'POST', { message: msg });
+      appendChat('JaTrAll', res.reply || '(no reply)');
+    } catch(e) {
+      alert('Chat failed: ' + e.message);
+    }
+  };
+
+  function appendChat(who, text) {
+    const div = document.createElement('div');
+    div.textContent = `${who}: ${text}`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Helper debounce function
+  function debounce(fn, delay = 300) {
+    let timer = null;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    }
+  }
+
+  // On page load, check token to auto-login if possible
+  window.onload = () => {
+    const token = getToken();
+    if(token) {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('appSection').style.display = 'block';
+      loadEvents();
+      loadFiles();
+      loadSlackMessages();
+    }
+  };
+</script>
+
+</body>
+</html>
